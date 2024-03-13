@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Request, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from api.constants.image_library import IMAGE_LIBRARY, CATEGORIES
 from api.data.doc_metadata import resource_descriptions
 from api.models.image_names_response import ImageNamesResponse
+from api.models.url_response import UrlResponse
 from api.utils.file_operations import get_image_path
 from api.utils.rate_limiter import limiter
 
@@ -41,6 +42,7 @@ async def get_images_by_category(category: str, request: Request) -> ImageNamesR
     data = {
         "category": category,
         "base_url": "https://image.lemon.industries/",
+        "count": IMAGE_LIBRARY.category_counts[category],
         "image_names": IMAGE_LIBRARY.files_by_category[category]
     }
     return data
@@ -50,7 +52,7 @@ async def get_images_by_category(category: str, request: Request) -> ImageNamesR
 @router.get(
     "/images/random/{category}", 
     tags=["images"],
-    summary="Redirect to a random category image | LIMIT: 1/sec",
+    summary="Returns a random category image | LIMIT: 1/sec",
     description=resource_descriptions["get_random_image_by_category"],
     responses={
         404: {"description": "Category Not Found"},
@@ -65,4 +67,46 @@ async def get_random_image_by_category(category: str, request: Request) -> FileR
     file_name = IMAGE_LIBRARY.get_random_by_category(category=category)
     path = get_image_path(file_name=file_name)
     return FileResponse(path=path)
+# endregion
+
+# region get_random_image_url_by_category
+@router.get(
+    "/images/random/{category}/url", 
+    tags=["images"],
+    summary="Get a random image url of a category | LIMIT: 1/sec",
+    description=resource_descriptions["get_random_image_url_by_category"],
+    responses={
+        404: {"description": "Category Not Found"},
+        429: {"description": "Rate limit exceeded"}
+    }
+)
+@limiter.limit("1/second")
+async def get_random_image_url_by_category(category: str, request: Request) -> UrlResponse:
+    category = category.lower()
+    if category not in CATEGORIES:
+        raise HTTPException(status_code=404, detail=f"Category '{category}' not found.")
+    file_name = IMAGE_LIBRARY.get_random_by_category(category=category)
+    return {"url": f"https://image.lemon.industries/{file_name}"}
+# endregion
+
+# region redirect_to_random_image
+@router.get(
+    "/images/random/{category}/redirect", 
+    tags=["images"],
+    summary="Redirect to a random image of a category | LIMIT: 1/sec",
+    description=resource_descriptions["redirect_to_random_image"],
+    responses={
+        307: {"description": "Redirect to the image on static image API"},
+        404: {"description": "Category Not Found"},
+        429: {"description": "Rate limit exceeded"}
+    }
+)
+@limiter.limit("1/second")
+async def redirect_to_random_image(category: str, request: Request) -> RedirectResponse:
+    category = category.lower()
+    if category not in CATEGORIES:
+        raise HTTPException(status_code=404, detail=f"Category '{category}' not found.")
+    file_name = IMAGE_LIBRARY.get_random_by_category(category=category)
+    url = f"https://image.lemon.industries/{file_name}"
+    return RedirectResponse(url=url)
 # endregion

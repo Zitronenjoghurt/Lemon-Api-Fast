@@ -10,7 +10,7 @@ app = FastAPI(
     redoc_url="/docs",
     title="Lemon Industries API",
     description="Just some random functionalities to interact with neat little things.",
-    version="0.1.0",
+    version="0.1.1",
     openapi_tags=resource_information
 )
 
