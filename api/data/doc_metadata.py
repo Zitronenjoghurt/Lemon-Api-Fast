@@ -28,7 +28,7 @@ Will return a random image of the specified category.
 
 This will stream the image, it is intended to just get a grasp of the images in the browser.
 
-The image will be unable to be embedded, use /images/random/category/redirect instead
+The image will be unable to be embedded, use /images/random/category/embed instead
 """,
     "get_random_image_url_by_category":
 """
@@ -38,8 +38,12 @@ Will return a random image URL of the specified category.
 """
 Will redirect to a random image of the specified category on my static image API.
 
-That way youre able to embed the random image, though it will be less viable to refresh over and over again in browser to see different images.
+That way youre able to directly access the image, though it will be less viable to refresh over and over again in browser to see different images.
 
 Example: https://image.lemon.industries/hug-1.gif
+""",
+    "embed_random_image":
+"""
+Will return a HTML response of a random image of the specified category with important meta tags to embed the image e.g. in Discord.
 """
 }
