@@ -5,7 +5,6 @@ from api.utils.rate_limiter import limiter
 
 router = APIRouter()
 
-@limiter.limit("1/minute")
 @router.get(
     "/images", 
     tags=["images"],
@@ -19,10 +18,10 @@ You can query the image names in those categories with '/images/{category}'.
 You can then embed the images by name via 'https://image.lemon.industries/{name}'.
 """
 )
+@limiter.limit("1/minute")
 async def get_images(request: Request) -> list[str]:
     return CATEGORIES
 
-@limiter.limit("1/minute")
 @router.get(
     "/images/hug", 
     tags=["images"],
@@ -37,6 +36,7 @@ Example: 'https://image.lemon.industries/hug-1.gif'
     """,
     response_model=ImageNamesResponse
 )
+@limiter.limit("1/minute")
 async def hug_images(request: Request) -> ImageNamesResponse:
     data = {
         "base_url": "https://image.lemon.industries/",
