@@ -6,7 +6,7 @@ from api.resources import images
 from api.utils.rate_limiter import limiter, rate_limit_exceeded_handler
 
 app = FastAPI(
-    docs_url=None,
+    docs_url="/swagger-docs",
     redoc_url="/docs",
     title="Lemon Industries API",
     description="Just some random functionalities to interact with neat little things.",

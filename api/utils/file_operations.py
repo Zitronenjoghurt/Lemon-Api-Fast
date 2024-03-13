@@ -5,6 +5,8 @@ from typing import Optional
 ROOT_DIR = str(Path(__file__).parent.parent.parent)
 ROOT_PARENT_DIR = str(Path(__file__).parent.parent.parent.parent)
 
+IMAGE_API_DIR = os.path.join(ROOT_PARENT_DIR, "image_api")
+
 def files_in_directory(path: str, suffix: Optional[str] = None) -> list[str]:
     if not os.path.exists(path):
         raise ValueError(f"Directory {path} does not exist.")
@@ -18,9 +20,8 @@ def files_in_directory(path: str, suffix: Optional[str] = None) -> list[str]:
             files.append(file)
     return files
 
-def get_image_api_directory() -> str:
-    return os.path.join(ROOT_PARENT_DIR, "image_api")
-
 def get_all_api_images() -> list[str]:
-    path = get_image_api_directory()
-    return files_in_directory(path=path)
+    return files_in_directory(path=IMAGE_API_DIR)
+
+def get_image_path(file_name: str):
+    return os.path.join(IMAGE_API_DIR, file_name)
