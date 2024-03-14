@@ -53,14 +53,14 @@ async def get_images_by_category(category: str, request: Request) -> ImageNamesR
 @router.get(
     "/images/random/{category}", 
     tags=["images"],
-    summary="Returns a random category image | LIMIT: 1/sec",
+    summary="Returns a random category image | LIMIT: 2/sec",
     description=resource_descriptions["get_random_image_by_category"],
     responses={
         404: {"description": "Category Not Found"},
         429: {"description": "Rate limit exceeded"}
     }
 )
-@limiter.limit("1/second")
+@limiter.limit("2/second")
 async def get_random_image_by_category(category: str, request: Request) -> FileResponse:
     category = category.lower()
     if category not in CATEGORIES:
@@ -74,14 +74,14 @@ async def get_random_image_by_category(category: str, request: Request) -> FileR
 @router.get(
     "/images/random/{category}/url", 
     tags=["images"],
-    summary="Get a random image url of a category | LIMIT: 1/sec",
+    summary="Get a random image url of a category | LIMIT: 2/sec",
     description=resource_descriptions["get_random_image_url_by_category"],
     responses={
         404: {"description": "Category Not Found"},
         429: {"description": "Rate limit exceeded"}
     }
 )
-@limiter.limit("1/second")
+@limiter.limit("2/second")
 async def get_random_image_url_by_category(category: str, request: Request) -> UrlResponse:
     category = category.lower()
     if category not in CATEGORIES:
@@ -94,7 +94,7 @@ async def get_random_image_url_by_category(category: str, request: Request) -> U
 @router.get(
     "/images/random/{category}/redirect", 
     tags=["images"],
-    summary="Redirect to a random image of a category | LIMIT: 1/sec",
+    summary="Redirect to a random image of a category | LIMIT: 2/sec",
     description=resource_descriptions["redirect_to_random_image"],
     responses={
         307: {"description": "Redirect to the image on static image API"},
@@ -102,7 +102,7 @@ async def get_random_image_url_by_category(category: str, request: Request) -> U
         429: {"description": "Rate limit exceeded"}
     }
 )
-@limiter.limit("1/second")
+@limiter.limit("2/second")
 async def redirect_to_random_image(category: str, request: Request) -> RedirectResponse:
     category = category.lower()
     if category not in CATEGORIES:
@@ -116,14 +116,14 @@ async def redirect_to_random_image(category: str, request: Request) -> RedirectR
 @router.get(
     "/images/random/{category}/embed", 
     tags=["images"],
-    summary="Retrieve random image of category for embedding | LIMIT: 1/sec",
+    summary="Retrieve random image of category for embedding | LIMIT: 2/sec",
     description=resource_descriptions["embed_random_image"],
     responses={
         404: {"description": "Category Not Found"},
         429: {"description": "Rate limit exceeded"}
     }
 )
-@limiter.limit("1/second")
+@limiter.limit("2/second")
 async def embed_random_image(category: str, request: Request) -> HTMLResponse:
     category = category.lower()
     if category not in CATEGORIES:
@@ -133,8 +133,16 @@ async def embed_random_image(category: str, request: Request) -> HTMLResponse:
     image_url = f"https://image.lemon.industries/{file_name}"
     image_type = get_image_type(file_name=file_name)
     title = category.capitalize()
+    
+    size_string = ""
+    size = IMAGE_LIBRARY.image_sizes[file_name]
+    if size:
+        height, width = size
+        size_string = f"""
+            <meta property="og:image:width" content="{width}" />
+            <meta property="og:image:height" content="{height}" />
+        """
 
-    # ToDo: determine dimensions of the image and append it to the header
     html_content = f"""
     <html>
         <head>
@@ -145,6 +153,7 @@ async def embed_random_image(category: str, request: Request) -> HTMLResponse:
             <meta property="og:url" content="{image_url}" />
             <meta property="og:type" content="image" />
             <meta property="og:site_name" content="Lemon Industries" />
+            {size_string}
             <meta name="theme-color" content="#CEF562" data-react-helmet="true" />
         </head>
         <body>

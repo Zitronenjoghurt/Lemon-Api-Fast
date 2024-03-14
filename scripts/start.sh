@@ -1,1 +1,1 @@
-sudo uvicorn app:app --reload
+sudo systemctl start lemon-api.service

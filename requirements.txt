@@ -9,6 +9,7 @@ idna==3.6
 importlib_resources==6.3.0
 limits==3.10.0
 packaging==23.2
+pillow==10.2.0
 pydantic==2.6.4
 pydantic_core==2.16.3
 slowapi==0.1.9
