@@ -14,11 +14,11 @@ router = APIRouter()
 @router.get(
     "/images", 
     tags=["images"],
-    summary="Get image categories | LIMIT: 1/min",
+    summary="Get image categories | LIMIT: 10/min",
     description=resource_descriptions["get_images"],
     responses={429: {"description": "Rate limit exceeded"}}
 )
-@limiter.limit("1/minute")
+@limiter.limit("10/minute")
 async def get_images(request: Request) -> list[str]:
     return CATEGORIES
 # endregion
