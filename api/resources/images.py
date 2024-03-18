@@ -27,7 +27,7 @@ async def get_images(request: Request) -> list[str]:
 @router.get(
     "/images/{category}", 
     tags=["images"],
-    summary="Get all images of a category | LIMIT: 5/min",
+    summary="Get all images of a category | LIMIT: 10/min",
     description=resource_descriptions["get_images_by_category"],
     response_model=ImageNamesResponse,
     responses={
@@ -35,7 +35,7 @@ async def get_images(request: Request) -> list[str]:
         429: {"description": "Rate limit exceeded"}
     }
 )
-@limiter.limit("5/minute")
+@limiter.limit("10/minute")
 async def get_images_by_category(category: str, request: Request) -> ImageNamesResponse:
     category = category.lower()
     if category not in CATEGORIES:
